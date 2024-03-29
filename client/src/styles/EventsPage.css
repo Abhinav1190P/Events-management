@@ -1,0 +1,51 @@
+.events-container {
+    color: white;
+    margin: 20px;
+  }
+  
+  h1 {
+    text-align: center;
+    color: #4fc3f7;
+    animation: fadeIn 2s ease-out;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    animation: slideIn 1s ease-out;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  th {
+    background-color: #1A2027;
+    color: #FFF;
+    cursor: pointer;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+    color: black;
+  }
+  
+  tr:hover {
+    background-color: #ddd;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  /* Add more animations and styles as needed */
+  
