@@ -1,5 +1,6 @@
 const Auth = require("../models/Auth");
 const Event = require("../models/Events");
+const Register = require("../models/Registration");
 
 const profile = async (req, res, next) => {
   try {
@@ -17,15 +18,48 @@ const profile = async (req, res, next) => {
 
 const getEvents = async (req, res, next) => {
   try {
-    const events = await Event.find({}).select(
-      "name club time venue date description banner"
-    );
-    return res
-      .status(200)
-      .json({ success: false, message: "Got events", events });
+    const userRegistrations = await Register.find({ registered_by: req.user.userId }).select('event_id');
+
+    const registeredEventIds = userRegistrations.map(registration => registration.event_id);
+
+    const events = await Event.find({ _id: { $nin: registeredEventIds } })
+    .limit(3)
+    .select("name club time venue date description banner createdAt");
+
+    return res.status(200).json({ success: true, message: "Got events", events });
   } catch (error) {
     next(error);
   }
 };
 
-module.exports = { profile, getEvents };
+const createRegistration = async (req, res, next) => {
+  try {
+    // Assuming eventId is available in the request body or parameters
+    const { name, club, time, venue, date, description, banner, admin_url, event_id } = req.body;
+
+    // Create a new registration including the event_id
+    const newRegistration = await Register.create({
+      name,
+      club,
+      time,
+      venue,
+      date,
+      description,
+      banner,
+      admin_url,
+      registered_by:req.user.userId,
+      event_id // Include the event_id here
+    });
+
+    // Respond with the newly created registration
+    res.status(201).json(newRegistration);
+  } catch (error) {
+    // Handle errors
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+
+
+module.exports = { profile, getEvents, createRegistration };

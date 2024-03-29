@@ -8,4 +8,6 @@ router.use("/profile", userController.profile);
 
 router.use("/get-events", userController.getEvents)
 
+router.use("/create-registration", userController.createRegistration)
+
 module.exports = router;

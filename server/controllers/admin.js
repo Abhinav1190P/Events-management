@@ -38,7 +38,7 @@ const createEvent = async (req, res, next) => {
 const getEvents = async (req, res, next) => {
   try {
     const events = await Event.find({admin_url:req.user.userId}).select(
-      "name club time venue date description banner"
+      "name club time venue date description banner createdAt"
     );
     return res
       .status(200)
