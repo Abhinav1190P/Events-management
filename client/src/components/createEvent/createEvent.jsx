@@ -145,7 +145,7 @@ const CreateEventSection = () => {
       venue: formData.venue,
       date: formData.date,
       description: formData.description,
-      banner: data.secure_url,
+      banner: data.secure_url
     };
     try {
       const { data } = await api.post(

@@ -18,7 +18,7 @@ const createEvent = async (req, res, next) => {
   try {
     const eventData = req.body;
 
-    const newEvent = new Event(eventData);
+    const newEvent = new Event({ ...eventData, admin_url: req.user.userId });
 
     newEvent
       .save()
@@ -37,7 +37,7 @@ const createEvent = async (req, res, next) => {
 
 const getEvents = async (req, res, next) => {
   try {
-    const events = await Event.find({}).select(
+    const events = await Event.find({admin_url:req.user.userId}).select(
       "name club time venue date description banner"
     );
     return res

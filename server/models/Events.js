@@ -33,6 +33,10 @@ const eventSchema = new mongoose.Schema({
   banner:{
     type:String,
     required:true
+  },
+  admin_url:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:'auth'
   }
 }, {
   timestamps: true // Optionally add this to automatically add createdAt and updatedAt fields

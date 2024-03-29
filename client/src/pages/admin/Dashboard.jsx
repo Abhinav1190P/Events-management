@@ -63,8 +63,6 @@ const Admin = () => {
       handleNavigation(text);
     }
   };
-  console.log(events)
-
 
   const sidebarItems = [
     { text: "Dashboard", icon: <DashboardIcon /> },
@@ -128,7 +126,6 @@ const Admin = () => {
     (screen) => screen.text === activeItem
   )?.component;
 
-  console.log(activeItem)
 
   return (
     <Box
