@@ -1,5 +1,6 @@
 const Auth = require("../models/Auth");
-const Event = require("../models/Events")
+const Event = require("../models/Events");
+const Register = require("../models/Registration");
 const profile = async (req, res, next) => {
   try {
     const user = req.user;
@@ -37,7 +38,7 @@ const createEvent = async (req, res, next) => {
 
 const getEvents = async (req, res, next) => {
   try {
-    const events = await Event.find({admin_url:req.user.userId}).select(
+    const events = await Event.find({ admin_url: req.user.userId }).select(
       "name club time venue date description banner createdAt"
     );
     return res
@@ -48,4 +49,29 @@ const getEvents = async (req, res, next) => {
   }
 };
 
-module.exports = { profile, createEvent, getEvents };
+const getAdminStats = async (req, res, next) => {
+  try {
+    const registrations = await Register.find({ admin_url: req.user.userId }).countDocuments();
+
+    const currentDate = new Date();
+
+    const upcomingEvents = await Event.find({ date: { $gt: currentDate } }).countDocuments()
+
+    const doneEvents = await Event.find({ date: { $lte: currentDate } }).countDocuments()
+
+    return res.status(200).json({
+      success: true,
+      message: "Got event data",
+      stats:{
+        registrations,
+        upcomingEvents,
+        doneEvents 
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+module.exports = { profile, createEvent, getEvents, getAdminStats };

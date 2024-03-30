@@ -24,7 +24,7 @@ const getEvents = async (req, res, next) => {
 
     const events = await Event.find({ _id: { $nin: registeredEventIds } })
     .limit(3)
-    .select("name club time venue date description banner createdAt");
+    .select("name club time venue date description banner createdAt admin_url");
 
     return res.status(200).json({ success: true, message: "Got events", events });
   } catch (error) {
@@ -34,10 +34,8 @@ const getEvents = async (req, res, next) => {
 
 const createRegistration = async (req, res, next) => {
   try {
-    // Assuming eventId is available in the request body or parameters
     const { name, club, time, venue, date, description, banner, admin_url, event_id } = req.body;
 
-    // Create a new registration including the event_id
     const newRegistration = await Register.create({
       name,
       club,
@@ -51,7 +49,6 @@ const createRegistration = async (req, res, next) => {
       event_id // Include the event_id here
     });
 
-    // Respond with the newly created registration
     res.status(201).json(newRegistration);
   } catch (error) {
     // Handle errors

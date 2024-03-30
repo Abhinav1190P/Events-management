@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, Card, CardMedia, CardContent, Typography, Button, Box, Modal } from '@mui/material';
 import useAxiosPrivate from "@hooks/useAxiosPrivate";
+import { toast } from "react-hot-toast";
 
 const EventsSection = () => {
   const [events, setEvents] = useState([]);
@@ -30,22 +31,24 @@ const EventsSection = () => {
   const handleConfirmRegistration = async () => {
     try {
       const event_id = selectedEvent._id;
-  
+
       const { _id, ...registrationData } = selectedEvent;
-  
-      const response = await api.post('/api/user/create-registration', {
-        ...registrationData, 
-        event_id 
+
+      await api.post('/api/user/create-registration', {
+        ...registrationData,
+        event_id
       });
-      
-      console.log('Registration created:', response.data);
+      toast.success("Created successfully");
+
       setOpenModal(false);
     } catch (error) {
+      toast.success(error.message);
       console.error('Error creating registration:', error);
     }
   };
-  
-  
+
+
+
   return (
     <>
       <Box sx={{ width: '100%', textAlign: 'center', my: 4 }}>

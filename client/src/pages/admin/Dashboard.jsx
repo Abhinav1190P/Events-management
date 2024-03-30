@@ -32,7 +32,6 @@ const Admin = () => {
   const [activeItem, setActiveItem] = useState("Dashboard");
   const [openDropdown, setOpenDropdown] = useState(false);
   const api = useAxiosPrivate()
-
   const handleDropMenu = () => {
     setOpenDropdown(!openDropdown);
   };
