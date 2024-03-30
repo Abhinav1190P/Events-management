@@ -1,88 +1,182 @@
-import React from 'react';
-import Slider from 'react-slick';
-import "slick-carousel/slick/slick.css"; 
-import "slick-carousel/slick/slick-theme.css";
-import { Box, Paper, Typography, Grid } from '@mui/material';
-import about1 from "../../assets/images/about1.jpg";
-import about2 from "../../assets/images/about2.jpg";
-import about3 from "../../assets/images/about3.jpg";
-import about4 from "../../assets/images/about4.jpg";
-import about5 from "../../assets/images/about5.jpg";
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import React, { useState, useEffect } from 'react';
+import { Box, TextField, Button, Typography, Grid } from '@mui/material';
+import { Image } from 'cloudinary-react';
+import { toast } from 'react-hot-toast'
+import useAxiosPrivate from '@hooks/useAxiosPrivate'
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { ScrollMenu } from 'react-horizontal-scrolling-menu';
 
-const About = () => {
-  // Slider settings
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 2000,
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
+
+const CreateClubForm = () => {
+  const [clubName, setClubName] = useState('');
+  const [clubImages, setClubImages] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const api = useAxiosPrivate()
+  const [items, setItems] = useState([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+
+
+  const handleNameChange = (event) => {
+    setClubName(event.target.value);
   };
 
-  // NextArrow component
-  function NextArrow(props) {
-    const { className, style, onClick } = props;
-    return (
-      <ArrowForwardIosIcon
-        className={className}
-        style={{ ...style, color: 'black', zIndex: 1 }}
-        onClick={onClick}
+  const handleImageChange = (event) => {
+    const files = Array.from(event.target.files);
+    const remainingSlots = 4 - clubImages.length;
+
+    if (files.length > remainingSlots) {
+      const selectedImages = files.slice(0, remainingSlots);
+      setClubImages([...clubImages, ...selectedImages]);
+    } else {
+      setClubImages([...clubImages, ...files]);
+    }
+  };
+
+
+  const handleSubmit = async () => {
+    if (clubName === '') {
+      toast.error("Please provide a club name");
+      return;
+    }
+
+    const imageUrls = []; // Array to store uploaded image URLs
+
+    try {
+      setUploading(true);
+
+      // Iterate over each image in clubImages
+      for (let i = 0; i < clubImages.length; i++) {
+        const formData = new FormData();
+        formData.append('file', clubImages[i]); // Append current image
+        formData.append('upload_preset', 'oxf8rttq');
+
+        // Upload current image
+        const response = await fetch('https://api.cloudinary.com/v1_1/doozsaybm/image/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Uploaded image:', data.url);
+          imageUrls.push(data.url);
+        } else {
+          console.error('Failed to upload image');
+        }
+      }
+
+      console.log('Uploaded images:', imageUrls);
+
+      const clubData = {
+        club_name: clubName,
+        club_images: imageUrls
+      };
+
+      const { data } = await api.post('/api/admin/create-club', clubData)
+      if (data.success) {
+        toast.success('Club created successfully');
+        setClubName('');
+        setClubImages([]);
+      }
+      else {
+        toast.error('Something went wrong');
+        setClubName('');
+        setClubImages([]);
+      }
+    } catch (error) {
+      console.error('Error uploading images:', error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+
+  useEffect(() => {
+    fetchItems(page);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+
+  const fetchItems = async (pageNumber) => {
+    try {
+      const response = await api.get(`/api/admin/clubs/${pageNumber}`);
+      const { clubs } = response.data;
+      console.log(clubs)
+      const newItems = clubs.map((club) => (
+        <div key={club._id} style={{ padding: '10px', minWidth: '150px' }}>
+          {club.club_name}
+        </div>
+      ));
+      setItems((prevItems) => [...prevItems, ...newItems]);
+      setPage(pageNumber + 1);
+      setHasMore(clubs.length > 0);
+    } catch (error) {
+      console.error('Error fetching items:', error);
+    }
+  };
+
+  const loadMore = () => {
+    fetchItems(page);
+  };
+
+
+  return (
+    <Box sx={{ maxWidth: 600, mx: 'auto', p: 2 }}>
+      <Typography variant="h4" gutterBottom>
+        Create New Club
+      </Typography>
+      <TextField
+        fullWidth
+        label="Club Name"
+        variant="outlined"
+        value={clubName}
+        onChange={handleNameChange}
+        sx={{ mb: 2 }}
       />
-    );
-  }
-
-  // PrevArrow component
-  function PrevArrow(props) {
-    const { className, style, onClick } = props;
-    return (
-      <ArrowBackIosNewIcon
-        className={className}
-        style={{ ...style, color: 'black', zIndex: 1 }}
-        onClick={onClick}
+      <input
+        type="file"
+        accept="image/*"
+        multiple
+        onChange={handleImageChange}
+        style={{ display: 'none' }}
+        id="club-images"
       />
-    );
-  }
-
-  const founders = [
-    { name: 'Emily Stone', role: 'Founder & CEO' },
-    { name: 'Michael Reed', role: 'Co-Founder & CTO' },
-  ];
-
-  const images = [about1, about2, about3, about4, about5]
-
-return (
-  <Box sx={{ maxWidth: 900, mx: 'auto', p: 2, overflow: 'hidden' }}> {/* Ensure overflow is handled */}
-    <Slider {...settings}>
-      {images.map((image, index) => (
-        <Paper key={index} elevation={3} component="div" sx={{ p: 2, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 500 }}>
-          <img src={image} alt={`Slide ${index + 1}`} style={{ width: '100%', height: 'auto', objectFit: 'contain' }} />
-        </Paper>
-      ))}
-    </Slider>
-    <Typography variant="body1" sx={{ mt: 4, color: 'black', wordWrap: 'break-word' }}>
-      The Event Horizon Club is a dynamic, community-driven organization that specializes in curating and managing a wide array of events. At the heart of its mission lies the commitment to bring people together, fostering connections and creating memorable experiences through meticulously organized gatherings. From vibrant cultural festivals and educational workshops to corporate conferences and intimate social gatherings, the Event Horizon Club prides itself on its ability to craft events that not only entertain but also enrich participants. With a keen eye for detail and a passion for innovation, the club's dedicated team works tirelessly to ensure each event is a seamless blend of creativity and efficiency. Leveraging the latest in event management technology alongside traditional hospitality values, the Event Horizon Club has established itself as a beacon of excellence in the realm of event planning and execution, continually setting new standards for what it means to bring communities together.
-    </Typography>
-    <Grid container spacing={2} sx={{ mt: 2, justifyContent: 'center' }}>
-        {founders.map((founder, index) => (
-          <Grid item xs={12} sm={6} key={index} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', borderRadius: '4px', color: 'white' }}>
-            <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-              {founder.name}
-            </Typography>
-            <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
-              {founder.role}
-            </Typography>
+      <label htmlFor="club-images">
+        <Button variant="contained" component="span" sx={{ mb: 2 }}>
+          Upload Club Images (Max 4)
+        </Button>
+      </label>
+      <Grid container spacing={2}>
+        {clubImages.map((image, index) => (
+          <Grid item key={index}>
+            <img src={URL.createObjectURL(image)} alt={`Club Image ${index}`} style={{ width: 200, height: 200, objectFit: 'cover' }} />
           </Grid>
         ))}
       </Grid>
-  </Box>
-);
+      <Button variant="contained" onClick={handleSubmit} disabled={uploading} sx={{ mt: 2 }}>
+        {uploading ? 'Uploading...' : 'Create Club'}
+      </Button>
 
-
+      {/* Display the message below the form */}
+      <Box sx={{ mt: 2 }}>
+        <InfiniteScroll
+          dataLength={items.length}
+          next={loadMore}
+          hasMore={hasMore}
+          loader={<h4>Loading...</h4>}
+          endMessage={<p>No more items to load</p>}
+          horizontal
+        >
+          <ScrollMenu
+            data={items.map((item, index) => (
+              <div key={index} style={{ padding: '10px', minWidth: '150px' }}>
+                {item}
+              </div>
+            ))}
+          />
+        </InfiniteScroll>  </Box>
+    </Box>
+  );
 };
-export default About;
+
+export default CreateClubForm;

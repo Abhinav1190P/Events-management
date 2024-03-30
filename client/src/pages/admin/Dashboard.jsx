@@ -21,7 +21,7 @@ import EventsPage from "@components/events/Events";
 import CreateEventSection from "@components/createEvent/createEvent";
 import Report from "@components/report/report";
 import MyCalendar from "@components/calendar/calendar";
-import About from "@components/about/about";
+import CreateClubForm from "@components/about/about";
 import Settings from "@components/settings/settings";
 import useAxiosPrivate from "@hooks/useAxiosPrivate";
 
@@ -76,7 +76,7 @@ const Admin = () => {
     },
     { text: "Post an Event", icon: <PostAddIcon /> },
     { text: "Report", icon: <ReportIcon /> },
-    { text: "About", icon: <InfoIcon /> },
+    { text: "Create Club", icon: <InfoIcon /> },
     { text: "Settings", icon: <SettingsIcon /> },
   ];
 
@@ -107,7 +107,7 @@ const Admin = () => {
         <img
           src={selectedEvent.banner}
           alt={selectedEvent.name}
-          style={{ maxWidth: '100%',maxHeight:'500px', marginBottom: 20 }}
+          style={{ maxWidth: '100%', maxHeight: '500px', marginBottom: 20 }}
         />
         <Typography variant="subtitle1">
           Club: {selectedEvent.club}
@@ -150,7 +150,7 @@ const Admin = () => {
   );
   const Aboutsection = () => (
     <div>
-      <About />
+      <CreateClubForm />
     </div>
   );
 
@@ -165,16 +165,12 @@ const Admin = () => {
     { text: "Events", component: Events },
     { text: "Post an Event", component: createEvent },
     { text: "Report", component: reportEvent },
-    { text: "About", component: Aboutsection },
+    { text: "Create Club", component: Aboutsection },
     { text: "Settings", component: settingsPage },
   ];
   const ActiveScreen = screens.find(
     (screen) => screen.text === activeItem
   )?.component;
-
-
-
-
 
 
   return (
