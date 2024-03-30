@@ -1,35 +1,56 @@
-import React, { useState } from 'react';
-import Dropdown from '../dropdown/dropdown';
-import '../../styles/EventsPage.css'
+import { useState } from "react";
 
-// Sample data for demonstration
+import {
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+  Box,
+  ListItemIcon,
+  Collapse,
+} from "@mui/material";
 
 
 
-const EventDetails = ({ event }) => {
-  if (!event) return null;
-
-  return (
-    <div className="event-details">
-      <h2>Event Details</h2>
-      <p><strong>Name:</strong> {event.name}</p>
-      <p><strong>Email:</strong> {event.email}</p>
-      <p><strong>Domain:</strong> {event.domain}</p>
-      <p><strong>Phone:</strong> {event.phone}</p>
-      <p><strong>Qualification:</strong> {event.qualification}</p>
-      <p><strong>Created On:</strong> {event.createdOn}</p>
-      <p><strong>Country:</strong> {event.country}</p>
-    </div>
-  );
-};
-
-const EventsPage = (event) => {
+const EventsPage = ({ event }) => {
   const [selectedEventId, setSelectedEventId] = useState(null);
+  console.log(event)
 
   return (
-    <div className="events-container">
-      <EventDetails /* event={selectedEvent} */ />
-    </div>
+    <Box p={2}>
+      <Typography variant="h4" gutterBottom>
+        {event && event.name} {/* Access event properties directly */}
+      </Typography>
+      <img src={event && event.banner} alt={event && event.name} style={{ maxWidth: '100%', marginBottom: 20 }} />
+      <Typography variant="subtitle1">
+        Club: {event && event.club}
+      </Typography>
+      <Typography variant="subtitle1">
+        Date: {event && new Date(event.date).toLocaleDateString()}
+      </Typography>
+      <Typography variant="subtitle1">
+        Time: {event && event.time}
+      </Typography>
+      <Typography variant="subtitle1">
+        Venue: {event && event.venue}
+      </Typography>
+      <Typography variant="subtitle1">
+        Description: {event && event.description}
+      </Typography>
+      <Drawer
+        anchor="right"
+        open={selectedEventId !== null}
+        onClose={() => setSelectedEventId(null)}
+      >
+        <List>
+          {/* You can add additional details or actions here */}
+          <ListItem button>
+            <ListItemText primary="Example Action" />
+          </ListItem>
+        </List>
+      </Drawer>
+    </Box>
   );
 };
 

@@ -31,12 +31,15 @@ const Admin = () => {
   const [events, setEvents] = useState([]);
   const [activeItem, setActiveItem] = useState("Dashboard");
   const [openDropdown, setOpenDropdown] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState({})
+
   const api = useAxiosPrivate()
   const handleDropMenu = () => {
     setOpenDropdown(!openDropdown);
   };
-  const handleNavigation = (text) => {
+  const handleNavigation = (text, selectedEvent) => {
     setActiveItem(text);
+    setSelectedEvent(events[0]);
   };
 
   useEffect(() => {
@@ -54,10 +57,11 @@ const Admin = () => {
     }
   }, [activeItem])
 
-  const handleClick = (text) => {
+  const handleClick = (text, dropdownItem) => {
     if (text === "Events") {
       handleDropMenu();
       setActiveItem("Events")
+      setSelectedEvent(dropdownItem)
     } else {
       handleNavigation(text);
     }
@@ -76,6 +80,12 @@ const Admin = () => {
     { text: "Settings", icon: <SettingsIcon /> },
   ];
 
+  useEffect(() => {
+    if (events.length > 0) {
+      setActiveItem("Events")
+      setSelectedEvent(events[0])
+    }
+  }, [events])
 
   const DashboardHome = () => (
     <div>
@@ -84,11 +94,48 @@ const Admin = () => {
     </div>
   );
 
-  const Events = () => (
-    <div>
-      <EventsPage event={events.length > 0 ? events : []} />
-    </div>
-  );
+  const Events = () => {
+    if (!selectedEvent) {
+      return null; // Render nothing if selectedEvent is undefined
+    }
+
+    return (
+      <Box p={2}>
+        <Typography variant="h4" gutterBottom>
+          {selectedEvent.name}
+        </Typography>
+        <img
+          src={selectedEvent.banner}
+          alt={selectedEvent.name}
+          style={{ maxWidth: '100%',maxHeight:'500px', marginBottom: 20 }}
+        />
+        <Typography variant="subtitle1">
+          Club: {selectedEvent.club}
+        </Typography>
+        <Typography variant="subtitle1">
+          Date: {selectedEvent.date ? new Date(selectedEvent.date).toLocaleDateString() : ''}
+        </Typography>
+        <Typography variant="subtitle1">
+          Time: {selectedEvent.time}
+        </Typography>
+        <Typography variant="subtitle1">
+          Venue: {selectedEvent.venue}
+        </Typography>
+        <Typography variant="subtitle1">
+          Description: {selectedEvent.description}
+        </Typography>
+        <Drawer anchor="right" open={false} onClose={() => { }}>
+          <List>
+            <ListItem button>
+              <ListItemText primary="Example Action" />
+            </ListItem>
+          </List>
+        </Drawer>
+      </Box>
+    );
+  };
+
+
 
   const createEvent = () => (
     <div>
@@ -124,6 +171,10 @@ const Admin = () => {
   const ActiveScreen = screens.find(
     (screen) => screen.text === activeItem
   )?.component;
+
+
+
+
 
 
   return (
@@ -181,7 +232,7 @@ const Admin = () => {
                           pl: 4,
                           backgroundColor: activeItem === dropdownItem.text ? "#4fc3f7" : "transparent",
                         }}
-                        onClick={() => handleNavigation(dropdownItem.name)}
+                        onClick={() => { handleNavigation(dropdownItem.name, dropdownItem); handleClick(item.text, dropdownItem) }}
                       >
                         <ListItemText primary={dropdownItem.name} />
                       </ListItem>

@@ -50,7 +50,7 @@ const DashboardPage = ({ dashboardData = { totalMembers: 0, programs: 0, totalEv
     }
     fetchStats()
   }, [])
-  console.log(stats)
+
 
   const handleToggleCreateEvent = () => { // Toggle function
     setShowCreateEvent(!showCreateEvent);
