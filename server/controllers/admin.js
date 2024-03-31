@@ -106,9 +106,8 @@ const GetClubs = async (req, res, next) => {
     return res.json({ success: true, clubs });
 
   } catch (error) {
-    return res.json({ success: true, data: clubs });
+    return res.status(500).json({ success: false, message: 'Internal server error' });
   }
-}
-
+};
 
 module.exports = { profile, createEvent, getEvents, getAdminStats, CreateClub, GetClubs };

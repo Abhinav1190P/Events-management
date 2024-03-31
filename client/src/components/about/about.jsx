@@ -101,15 +101,14 @@ const CreateClubForm = () => {
     try {
       const response = await api.get(`/api/admin/clubs/${pageNumber}`);
       const { clubs } = response.data;
-      console.log(clubs)
-      const newItems = clubs.map((club) => (
-        <div key={club._id} style={{ padding: '10px', minWidth: '150px' }}>
-          {club.club_name}
-        </div>
-      ));
-      setItems((prevItems) => [...prevItems, ...newItems]);
+
+      const perPage = 10;
+
+
+
+      setItems((prevItems) => [...prevItems, ...clubs]);
       setPage(pageNumber + 1);
-      setHasMore(clubs.length > 0);
+      setHasMore(clubs.length < perPage);
     } catch (error) {
       console.error('Error fetching items:', error);
     }
@@ -167,13 +166,14 @@ const CreateClubForm = () => {
           endMessage={<p>No more items to load</p>}
           horizontal
         >
-          <ScrollMenu
-            data={items.map((item, index) => (
+          {
+            items.map((item, index) => (
               <div key={index} style={{ padding: '10px', minWidth: '150px' }}>
-                {item}
+                Hey
               </div>
-            ))}
-          />
+            ))
+          }
+
         </InfiniteScroll>  </Box>
     </Box>
   );
