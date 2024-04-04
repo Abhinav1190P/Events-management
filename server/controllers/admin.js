@@ -99,11 +99,14 @@ const GetClubs = async (req, res, next) => {
     const page = req.query.page || 1;
     const perPage = 10;
 
-    const clubs = await Club.find()
+    const clubs = await Club.find({ club_admin: req.user.userId })
       .skip((page - 1) * perPage)
       .limit(perPage);
 
-    return res.json({ success: true, clubs });
+    const totalClubs = await Club.find({club_admin: req.user.userId}).countDocuments(); // Get total count of all clubs
+
+
+    return res.json({ success: true, clubs, totalClubs });
 
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Internal server error' });

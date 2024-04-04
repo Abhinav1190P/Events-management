@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Box, TextField, Button, Typography, Grid } from '@mui/material';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Box, TextField, Button, Typography, Grid, Card, CardMedia, CardContent } from '@mui/material';
 import { Image } from 'cloudinary-react';
 import { toast } from 'react-hot-toast'
 import useAxiosPrivate from '@hooks/useAxiosPrivate'
@@ -15,7 +15,9 @@ const CreateClubForm = () => {
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-
+  const [activePage, setActivePage] = useState(1);
+  const [totalClubs, setTotalClubs] = useState(0)
+  const [info, setInfo] = useState({})
 
   const handleNameChange = (event) => {
     setClubName(event.target.value);
@@ -97,27 +99,40 @@ const CreateClubForm = () => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
 
-  const fetchItems = async (pageNumber) => {
+  const fetchItems = async () => {
     try {
-      const response = await api.get(`/api/admin/clubs/${pageNumber}`);
-      const { clubs } = response.data;
-
-      const perPage = 10;
-
-
-
-      setItems((prevItems) => [...prevItems, ...clubs]);
-      setPage(pageNumber + 1);
-      setHasMore(clubs.length < perPage);
+      const response = await api.get(`/api/admin/clubs/${activePage}`)
+        .then(({ data }) => {
+          setActivePage(activePage + 1);
+          setTotalClubs(data.totalClubs)
+          setItems(data.clubs)
+        })
+        .catch((error) => {
+          setInfo(null);
+          console.error(error);
+        });
     } catch (error) {
       console.error('Error fetching items:', error);
     }
   };
 
-  const loadMore = () => {
-    fetchItems(page);
-  };
+  const fetchMoreData = useCallback(() => {
+    try {
+      api.get(`/api/admin/clubs/${activePage}`)
+        .then(({ data }) => {
+          setActivePage(activePage + 1);
+          setItems(prevItems => [...prevItems, ...data.posts]);
+          setPage(page + 1);
+        })
+        .catch((error) => {
+          setInfo(null);
+          console.error(error);
+        });
 
+    } catch (error) {
+      console.error("Error fetching chats:", error);
+    }
+  }, [items.length, activePage, totalClubs])
 
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', p: 2 }}>
@@ -137,7 +152,7 @@ const CreateClubForm = () => {
         accept="image/*"
         multiple
         onChange={handleImageChange}
-        style={{ display: 'none' }}
+        style={{ display: 'none', width: '0px', height: '0px' }}
         id="club-images"
       />
       <label htmlFor="club-images">
@@ -160,21 +175,45 @@ const CreateClubForm = () => {
       <Box sx={{ mt: 2 }}>
         <InfiniteScroll
           dataLength={items.length}
-          next={loadMore}
-          hasMore={hasMore}
-          loader={<h4>Loading...</h4>}
-          endMessage={<p>No more items to load</p>}
+          next={fetchMoreData}
+          hasMore={items.length < totalClubs}
+          loader={<Typography>Loading...</Typography>}
+          endMessage={<Typography>No more items to load</Typography>}
           horizontal
         >
-          {
-            items.map((item, index) => (
-              <div key={index} style={{ padding: '10px', minWidth: '150px' }}>
-                Hey
-              </div>
-            ))
-          }
-
-        </InfiniteScroll>  </Box>
+          <Box sx={{ mt: 2 }}>
+            <Grid container spacing={2}>
+              {
+                items.map((item, index) => (
+                  <Grid item xs={12} sm={6} md={3} key={item.id}>
+                    <Card sx={{ maxWidth: 345, mx: "auto" }}>
+                      <CardMedia
+                        component="img"
+                        height="140"
+                        image={item.club_images[0]}
+                        alt={`${item.name} Banner`}
+                      />
+                      <CardContent>
+                        <Typography gutterBottom variant="h5" component="div" textAlign="center">
+                          {item.name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" textAlign="center">
+                          Participants: {item.participants}
+                        </Typography>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                          <Button variant="contained" color="primary">
+                            Join
+                          </Button>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))
+              }
+            </Grid>
+          </Box>
+        </InfiniteScroll>
+      </Box>
     </Box>
   );
 };

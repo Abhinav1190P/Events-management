@@ -243,6 +243,7 @@ const Admin = () => {
       </Drawer>
       <Box
         component="main"
+        height={'max-content'}
         sx={{
           flexGrow: 1,
           bgcolor: "whitesmoke",

@@ -30,17 +30,30 @@ const eventSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
-  banner:{
-    type:String,
-    required:true
+  banner: {
+    type: String,
+    required: true
   },
-  admin_url:{
-    type:mongoose.Schema.Types.ObjectId,
-    ref:'auth'
+  admin_url: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'auth'
   }
 }, {
-  timestamps: true // Optionally add this to automatically add createdAt and updatedAt fields
+  timestamps: true
 });
+
+eventSchema.virtual('status').get(function () {
+  const now = new Date();
+  if (this.date > now) {
+    return 'upcoming';
+  } else if (this.date.toDateString() === now.toDateString()) {
+    return 'happening';
+  } else {
+    return 'done';
+  }
+});
+
+eventSchema.set('toJSON', { virtuals: true });
 
 const Event = mongoose.model('Event', eventSchema);
 
