@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Box, TextField, Button, Typography, Grid, Card, CardMedia, CardContent } from '@mui/material';
 import { Image } from 'cloudinary-react';
 import { toast } from 'react-hot-toast'
 import useAxiosPrivate from '@hooks/useAxiosPrivate'
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { ScrollMenu } from 'react-horizontal-scrolling-menu';
-
-
+import SimpleInlineToolbarEditor from './Editor/Editor';
 const CreateClubForm = () => {
   const [clubName, setClubName] = useState('');
   const [clubImages, setClubImages] = useState([]);
@@ -18,7 +16,7 @@ const CreateClubForm = () => {
   const [activePage, setActivePage] = useState(1);
   const [totalClubs, setTotalClubs] = useState(0)
   const [info, setInfo] = useState({})
-
+  const [clubSwitch, handleClubSwitch] = useState(false)
   const handleNameChange = (event) => {
     setClubName(event.target.value);
   };
@@ -134,7 +132,10 @@ const CreateClubForm = () => {
     }
   }, [items.length, activePage, totalClubs])
 
-  return (
+
+  return (clubSwitch) ? (
+    <SimpleInlineToolbarEditor />
+  ) : (
     <Box sx={{ maxWidth: 600, mx: 'auto', p: 2 }}>
       <Typography variant="h4" gutterBottom>
         Create New Club
@@ -201,8 +202,8 @@ const CreateClubForm = () => {
                           Participants: {item.participants}
                         </Typography>
                         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                          <Button variant="contained" color="primary">
-                            Join
+                          <Button onClick={() => { handleClubSwitch(true) }} variant="contained" color="primary">
+                            Create About
                           </Button>
                         </Box>
                       </CardContent>
@@ -214,8 +215,10 @@ const CreateClubForm = () => {
           </Box>
         </InfiniteScroll>
       </Box>
-    </Box>
-  );
+    </Box >
+  )
+
+
 };
 
 export default CreateClubForm;

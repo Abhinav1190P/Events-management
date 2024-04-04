@@ -20,7 +20,7 @@ const AdminRoutes = {
     {
       path: "admin/profile",
       element: <Profile />,
-    },
+    }
   ],
 };
 
