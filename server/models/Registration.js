@@ -42,12 +42,16 @@ const registrationSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'auth'
     },
-    event_id:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'auth'
+    event_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'auth'
+    },
+    qrCode: {
+        type: String,
+        required: false,
     }
 }, {
-    timestamps: true 
+    timestamps: true
 })
 
 const Register = mongoose.model('Register', registrationSchema);

@@ -3,6 +3,8 @@ const Event = require("../models/Events");
 const Register = require("../models/Registration");
 const Club = require("../models/Club")
 const About = require("../models/About")
+const jwt = require("jsonwebtoken")
+
 const profile = async (req, res, next) => {
   try {
     const user = req.user;
@@ -21,6 +23,13 @@ const createEvent = async (req, res, next) => {
   try {
     const eventData = req.body;
 
+    const eventDate = new Date(eventData.date);
+    const expirationTime = eventDate.getTime() + (24 * 60 * 60 * 1000);
+
+    const secretKey = jwt.sign({ eventId: eventData._id }, 'event-secret-123', { expiresIn: expirationTime });
+
+    eventData.secret_key = secretKey;
+
     const newEvent = new Event({ ...eventData, admin_url: req.user.userId });
 
     newEvent
@@ -37,6 +46,7 @@ const createEvent = async (req, res, next) => {
     next(error);
   }
 };
+
 
 const getEvents = async (req, res, next) => {
   try {

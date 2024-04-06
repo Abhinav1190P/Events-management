@@ -34,6 +34,10 @@ const eventSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  secret_key: {
+    type: String,
+    required: false
+  },
   admin_url: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'auth'

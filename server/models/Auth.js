@@ -41,6 +41,10 @@ const authSchema = new Schema(
       trim: true,
       required: true,
     },
+    csHours: {
+      type: Number,
+      default: 0
+    },
     rollNumber: {
       type: String,
       trim: true,
