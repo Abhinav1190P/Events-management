@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { EditorState } from "draft-js";
+import { EditorState, convertFromHTML, ContentState } from "draft-js";
 import Editor, { createEditorStateWithText, composeDecorators } from "@draft-js-plugins/editor";
 import createInlineToolbarPlugin, { Separator } from "@draft-js-plugins/inline-toolbar";
 import createSideToolbarPlugin from "@draft-js-plugins/side-toolbar";
@@ -34,8 +34,7 @@ import "@draft-js-plugins/focus/lib/plugin.css";
 import "@draft-js-plugins/image/lib/plugin.css";
 import "@draft-js-plugins/alignment/lib/plugin.css";
 
-const text =
-    "In this editor a toolbar shows up once you select part of the text …";
+
 
 const HeadlinesPicker = (props) => {
     useEffect(() => {
@@ -78,7 +77,10 @@ const HeadlinesButton = (props) => {
     );
 };
 
-const SimpleInlineToolbarEditor = ({ club }) => {
+const SimpleInlineToolbarEditor = ({ club, htmlContent }) => {
+    const text = htmlContent ? htmlContent :
+        "In this editor a toolbar shows up once you select part of the text …";
+    console.log(text)
     const [
         plugins,
         InlineToolbar,
@@ -124,8 +126,14 @@ const SimpleInlineToolbarEditor = ({ club }) => {
     );
 
     useEffect(() => {
-        setEditorState(createEditorStateWithText(text));
-    }, []);
+        if (htmlContent) {
+            const blocksFromHTML = convertFromHTML(htmlContent);
+            const state = ContentState.createFromBlockArray(blocksFromHTML.contentBlocks, blocksFromHTML.entityMap);
+            setEditorState(EditorState.createWithContent(state));
+        } else {
+            setEditorState(createEditorStateWithText(text));
+        }
+    }, [htmlContent, text]);
 
     const editor = useRef(null);
 

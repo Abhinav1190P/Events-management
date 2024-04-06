@@ -136,7 +136,7 @@ const CreateClubForm = () => {
   }, [items.length, activePage, totalClubs])
 
   useEffect(() => {
-    if (ViewOrEdit === 'view') {
+    if (ViewOrEdit === 'view' || ViewOrEdit === 'edit') {
       const FetchAboutSectionAndDisplay = async () => {
         await api.get(`/api/admin/get-club-about/${currentClub._id}`)
           .then(({ data }) => {
@@ -151,7 +151,7 @@ const CreateClubForm = () => {
 
   return (clubSwitch) ? (
     ViewOrEdit === 'edit' ? (
-      <SimpleInlineToolbarEditor club={currentClub} />
+      <SimpleInlineToolbarEditor club={currentClub} htmlContent={htmlContent} />
     ) : (<div dangerouslySetInnerHTML={{ __html: htmlContent }}></div>)
   ) : (
     <Box sx={{ maxWidth: 600, mx: 'auto', p: 2 }}>

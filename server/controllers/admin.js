@@ -122,23 +122,28 @@ const CreateClubAbout = async (req, res, next) => {
 
     if (about) {
       about.htmlContent = htmlContent;
+      about = await about.save();
+
+      return res.status(200).json({
+        message: 'About updated successfully',
+        about: about
+      });
     } else {
       about = new About({
         club_id,
         htmlContent
       });
+      const savedAbout = await about.save();
+
+      return res.status(201).json({
+        message: 'About created successfully',
+        about: savedAbout
+      });
     }
-
-    const savedAbout = await about.save();
-
-    res.status(200).json({
-      message: 'About saved successfully',
-      about: savedAbout
-    });
   } catch (error) {
     // Handle errors
     console.error('Error creating or updating club about:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -149,7 +154,7 @@ const GetClubAbout = async (req, res, next) => {
     if (about.length == 0) {
       return res.status(200).json({ success: false, message: 'No about section found' })
     }
-    res.status(200).json({about:about[0]})
+    res.status(200).json({ about: about[0] })
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
 
