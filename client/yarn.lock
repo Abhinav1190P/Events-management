@@ -1039,7 +1039,19 @@ dom-helpers@^5.0.1, dom-helpers@^5.2.0, dom-helpers@^5.2.1:
     "@babel/runtime" "^7.8.7"
     csstype "^3.0.2"
 
-"draft-js@^0.10.1 || ^0.11.0", draft-js@^0.11.0, draft-js@^0.11.7:
+draft-js-export-html@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.npmjs.org/draft-js-export-html/-/draft-js-export-html-1.4.1.tgz"
+  integrity sha512-G4VGBSalPowktIE4wp3rFbhjs+Ln9IZ2FhXeHjsZDSw0a2+h+BjKu5Enq+mcsyVb51RW740GBK8Xbf7Iic51tw==
+  dependencies:
+    draft-js-utils "^1.4.0"
+
+draft-js-utils@^1.4.0:
+  version "1.4.1"
+  resolved "https://registry.npmjs.org/draft-js-utils/-/draft-js-utils-1.4.1.tgz"
+  integrity sha512-xE81Y+z/muC5D5z9qWmKfxEW1XyXfsBzSbSBk2JRsoD0yzMGGHQm/0MtuqHl/EUDkaBJJLjJ2EACycoDMY/OOg==
+
+"draft-js@^0.10.1 || ^0.11.0", draft-js@^0.11.0, draft-js@^0.11.7, draft-js@>=0.10.0:
   version "0.11.7"
   resolved "https://registry.npmjs.org/draft-js/-/draft-js-0.11.7.tgz"
   integrity sha512-ne7yFfN4sEL82QPQEn80xnADR8/Q6ALVworbC5UOSzOvjffmYfFsr3xSZtxbIirti14R7Y33EZC5rivpLgIbsg==
@@ -1225,7 +1237,7 @@ hoist-non-react-statics@^3.3.1:
   dependencies:
     react-is "^16.7.0"
 
-immutable@~3.7.4:
+immutable@~3.7.4, immutable@3.x.x:
   version "3.7.6"
   resolved "https://registry.npmjs.org/immutable/-/immutable-3.7.6.tgz"
   integrity sha512-AizQPcaofEtO11RZhPPHBOJRdo/20MKQF9mBLnVkBoyHi1/zXK8fzVdnEpSV9gxqtnh6Qomfp3F0xT5qP/vThw==

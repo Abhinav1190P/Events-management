@@ -1,10 +1,4 @@
-import React, {
-    ReactElement,
-    useEffect,
-    useMemo,
-    useRef,
-    useState
-} from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { EditorState } from "draft-js";
 import Editor, { createEditorStateWithText, composeDecorators } from "@draft-js-plugins/editor";
 import createInlineToolbarPlugin, { Separator } from "@draft-js-plugins/inline-toolbar";
@@ -15,6 +9,7 @@ import createFocusPlugin from "@draft-js-plugins/focus";
 import createResizeablePlugin from "@draft-js-plugins/resizeable";
 import createBlockDndPlugin from "@draft-js-plugins/drag-n-drop";
 import createTextAlignmentPlugin from '@draft-js-plugins/text-alignment';
+import { stateToHTML } from 'draft-js-export-html';
 
 import editorStyles from "./editorStyles.css?inline";
 
@@ -41,6 +36,7 @@ import "@draft-js-plugins/alignment/lib/plugin.css";
 
 const text =
     "In this editor a toolbar shows up once you select part of the text …";
+
 const HeadlinesPicker = (props) => {
     useEffect(() => {
         setTimeout(() => {
@@ -53,15 +49,12 @@ const HeadlinesPicker = (props) => {
     }, []);
 
     const onWindowClick = () =>
-        // Call `onOverrideContent` again with `undefined`
-        // so the toolbar can show its regular content again.
         props.onOverrideContent(undefined);
 
     const buttons = [HeadlineOneButton, HeadlineTwoButton, HeadlineThreeButton];
     return (
         <div>
             {buttons.map((Button, i) => (
-                // eslint-disable-next-line react/no-array-index-key
                 <Button key={i} {...props} />
             ))}
         </div>
@@ -69,9 +62,6 @@ const HeadlinesPicker = (props) => {
 };
 
 const HeadlinesButton = (props) => {
-    // When using a click event inside overridden content, mouse down
-    // events needs to be prevented so the focus stays in the editor
-    // and the toolbar remains visible  onMouseDown = (event) => event.preventDefault()
     const onMouseDown = (event) => event.preventDefault();
 
     const onClick = () => props.onOverrideContent(HeadlinesPicker);
@@ -103,7 +93,7 @@ const SimpleInlineToolbarEditor = () => {
         const resizeablePlugin = createResizeablePlugin();
         const blockDndPlugin = createBlockDndPlugin();
         const alignmentPlugin = createAlignmentPlugin();
-        const textAlignmentPlugin = createTextAlignmentPlugin({theme: { alignmentStyles }});
+        const textAlignmentPlugin = createTextAlignmentPlugin({ theme: { alignmentStyles } });
         const decorator = composeDecorators(
             resizeablePlugin.decorator,
             alignmentPlugin.decorator,
@@ -134,7 +124,6 @@ const SimpleInlineToolbarEditor = () => {
     );
 
     useEffect(() => {
-        // fixing issue with SSR https://github.com/facebook/draft-js/issues/2332#issuecomment-761573306
         setEditorState(createEditorStateWithText(text));
     }, []);
 
@@ -147,6 +136,13 @@ const SimpleInlineToolbarEditor = () => {
     const focus = () => {
         editor.current?.focus();
     };
+
+    const handleSave = () => {
+        const contentState = editorState.getCurrentContent();
+        const html = stateToHTML(contentState);
+        alert(html);
+    };
+
     return (
         <React.Fragment>
             <ImageAdd
@@ -167,25 +163,23 @@ const SimpleInlineToolbarEditor = () => {
                 <AlignmentTool />
 
                 <InlineToolbar>
-                    {
-                        // may be use React.Fragment instead of div to improve perfomance after React 16
-                        (externalProps) => (
-                            <div>
-                                <BoldButton {...externalProps} />
-                                <ItalicButton {...externalProps} />
-                                <UnderlineButton {...externalProps} />
-                                <Separator />
-                                <HeadlinesButton {...externalProps} />
-                                <UnorderedListButton {...externalProps} />
-                                <OrderedListButton {...externalProps} />
-                                <BlockquoteButton {...externalProps} />
-                                <TextAlignment {...externalProps} />
-                            </div>
-                        )
-                    }
+                    {(externalProps) => (
+                        <div>
+                            <BoldButton {...externalProps} />
+                            <ItalicButton {...externalProps} />
+                            <UnderlineButton {...externalProps} />
+                            <Separator />
+                            <HeadlinesButton {...externalProps} />
+                            <UnorderedListButton {...externalProps} />
+                            <OrderedListButton {...externalProps} />
+                            <BlockquoteButton {...externalProps} />
+                            <TextAlignment {...externalProps} />
+                        </div>
+                    )}
                 </InlineToolbar>
                 <SideToolbar />
             </div>
+            <button onClick={handleSave}>Save</button>
         </React.Fragment>
     );
 };
