@@ -16,4 +16,8 @@ router.use('/create-club', adminController.CreateClub)
 
 router.use('/clubs/:page', adminController.GetClubs)
 
+router.use("/club-create-about", adminController.CreateClubAbout)
+
+router.use("/get-club-about/:clubid", adminController.GetClubAbout)
+
 module.exports = router;

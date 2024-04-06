@@ -2,6 +2,7 @@ const Auth = require("../models/Auth");
 const Event = require("../models/Events");
 const Register = require("../models/Registration");
 const Club = require("../models/Club")
+const About = require("../models/About")
 const profile = async (req, res, next) => {
   try {
     const user = req.user;
@@ -103,7 +104,7 @@ const GetClubs = async (req, res, next) => {
       .skip((page - 1) * perPage)
       .limit(perPage);
 
-    const totalClubs = await Club.find({club_admin: req.user.userId}).countDocuments(); // Get total count of all clubs
+    const totalClubs = await Club.find({ club_admin: req.user.userId }).countDocuments(); // Get total count of all clubs
 
 
     return res.json({ success: true, clubs, totalClubs });
@@ -113,4 +114,47 @@ const GetClubs = async (req, res, next) => {
   }
 };
 
-module.exports = { profile, createEvent, getEvents, getAdminStats, CreateClub, GetClubs };
+const CreateClubAbout = async (req, res, next) => {
+  try {
+    const { club_id, htmlContent } = req.body;
+
+    let about = await About.findOne({ club_id });
+
+    if (about) {
+      about.htmlContent = htmlContent;
+    } else {
+      about = new About({
+        club_id,
+        htmlContent
+      });
+    }
+
+    const savedAbout = await about.save();
+
+    res.status(200).json({
+      message: 'About saved successfully',
+      about: savedAbout
+    });
+  } catch (error) {
+    // Handle errors
+    console.error('Error creating or updating club about:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+const GetClubAbout = async (req, res, next) => {
+  try {
+    const aboutId = req.params.clubid
+    const about = await About.find({ club_id: aboutId })
+    if (about.length == 0) {
+      return res.status(200).json({ success: false, message: 'No about section found' })
+    }
+    res.status(200).json({about:about[0]})
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+
+  }
+}
+
+
+module.exports = { profile, createEvent, getEvents, getAdminStats, CreateClub, GetClubs, CreateClubAbout, GetClubAbout };

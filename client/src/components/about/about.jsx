@@ -17,6 +17,9 @@ const CreateClubForm = () => {
   const [totalClubs, setTotalClubs] = useState(0)
   const [info, setInfo] = useState({})
   const [clubSwitch, handleClubSwitch] = useState(false)
+  const [currentClub, setCurrentClub] = useState({})
+  const [ViewOrEdit, setViewOrEdit] = useState('')
+  const [htmlContent, setHtmlContent] = useState("")
   const handleNameChange = (event) => {
     setClubName(event.target.value);
   };
@@ -132,9 +135,24 @@ const CreateClubForm = () => {
     }
   }, [items.length, activePage, totalClubs])
 
+  useEffect(() => {
+    if (ViewOrEdit === 'view') {
+      const FetchAboutSectionAndDisplay = async () => {
+        await api.get(`/api/admin/get-club-about/${currentClub._id}`)
+          .then(({ data }) => {
+            if (data.about) {
+              setHtmlContent(data?.about?.htmlContent)
+            }
+          })
+      }
+      FetchAboutSectionAndDisplay()
+    }
+  }, [ViewOrEdit])
 
   return (clubSwitch) ? (
-    <SimpleInlineToolbarEditor />
+    ViewOrEdit === 'edit' ? (
+      <SimpleInlineToolbarEditor club={currentClub} />
+    ) : (<div dangerouslySetInnerHTML={{ __html: htmlContent }}></div>)
   ) : (
     <Box sx={{ maxWidth: 600, mx: 'auto', p: 2 }}>
       <Typography variant="h4" gutterBottom>
@@ -201,9 +219,12 @@ const CreateClubForm = () => {
                         <Typography variant="body2" color="text.secondary" textAlign="center">
                           Participants: {item.participants}
                         </Typography>
-                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                          <Button onClick={() => { handleClubSwitch(true) }} variant="contained" color="primary">
-                            Create About
+                        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', mt: 2 }}>
+                          <Button sx={{ mb: 3 }} onClick={() => { handleClubSwitch(true); setCurrentClub(item); setViewOrEdit('edit') }} variant="contained" color="primary">
+                            Edit About
+                          </Button>
+                          <Button onClick={() => { handleClubSwitch(true); setCurrentClub(item); setViewOrEdit('view') }} variant="contained" color="primary">
+                            View About
                           </Button>
                         </Box>
                       </CardContent>

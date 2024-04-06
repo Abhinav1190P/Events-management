@@ -10,7 +10,7 @@ import createResizeablePlugin from "@draft-js-plugins/resizeable";
 import createBlockDndPlugin from "@draft-js-plugins/drag-n-drop";
 import createTextAlignmentPlugin from '@draft-js-plugins/text-alignment';
 import { stateToHTML } from 'draft-js-export-html';
-
+import useAxiosPrivate from '@hooks/useAxiosPrivate'
 import editorStyles from "./editorStyles.css?inline";
 
 import ImageAdd from "./addImage";
@@ -78,7 +78,7 @@ const HeadlinesButton = (props) => {
     );
 };
 
-const SimpleInlineToolbarEditor = () => {
+const SimpleInlineToolbarEditor = ({ club }) => {
     const [
         plugins,
         InlineToolbar,
@@ -118,7 +118,7 @@ const SimpleInlineToolbarEditor = () => {
             textAlignmentPlugin.TextAlignment,
         ];
     }, []);
-
+    const api = useAxiosPrivate()
     const [editorState, setEditorState] = useState(() =>
         createEditorStateWithText("")
     );
@@ -137,10 +137,14 @@ const SimpleInlineToolbarEditor = () => {
         editor.current?.focus();
     };
 
-    const handleSave = () => {
+
+    const handleSave = async () => {
         const contentState = editorState.getCurrentContent();
         const html = stateToHTML(contentState);
-        alert(html);
+        await api.post('/api/admin/club-create-about', { club_id: club._id, htmlContent: html })
+            .then(({ data }) => {
+                console.log(data)
+            })
     };
 
     return (
