@@ -1,82 +1,119 @@
-import * as React from 'react';
-import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import TextField from '@mui/material/TextField';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import { Grid, Paper } from '@mui/material';
-import dayjs from 'dayjs'; // Import dayjs
+import React, { useEffect, useState } from 'react';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import moment from 'moment';
+import { Box, styled } from '@mui/material';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import useAxiosPrivate from "@hooks/useAxiosPrivate";
 
-export default function CalendarComponent() {
-  const [value, setValue] = React.useState(dayjs()); // Initialize with a Day.js object
+const localizer = momentLocalizer(moment);
 
-  // Mock list of upcoming events
-  const events = [
-    { date: '2024-03-10', title: 'Event 1' },
-    { date: '2024-03-15', title: 'Event 2' },
-    { date: '2024-03-20', title: 'Event 3' },
-  ];
 
-  // Define colors and styles for a sleek look
-  const paperStyle = {
-    backgroundColor: '#ffffff', // Light background for contrast
-    color: '#333333', // Dark text for readability
-    p: 2, // Padding around the content
-    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)', // Soft shadow for depth
-  };
 
-  const listStyle = {
-    maxHeight: 500,
-    overflow: 'auto',
-    backgroundColor: '#f7f7f7', // Slightly off-white for the list background
-    p: 2,
-    borderRadius: '4px', // Rounded corners for the list
-  };
-
-  const datePickerStyle = {
-    '.MuiCalendarPicker-root': {
-      backgroundColor: '#f0f0f0', // Light gray background for the calendar
+// Updated Custom Styled Box for Calendar with vibrant colors and contrast
+const StyledCalendarBox = styled(Box)({
+  '& .rbc-calendar': {
+    backgroundColor: '#ffffff',
+    border: '1px solid #4fc3f7',
+    borderRadius: '8px',
+    boxShadow: '0 6px 12px rgba(0, 0, 0, 0.05)',
+  },
+  '& .rbc-header': {
+    backgroundColor: '#039be5',
+    color: '#fff',
+    fontWeight: 'bold',
+    padding: '10px 0',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05rem',
+  },
+  '& .rbc-today': {
+    backgroundColor: '#e1f5fe',
+  },
+  '& .rbc-off-range-bg': {
+    backgroundColor: '#f7f7f7',
+  },
+  '& .rbc-event': {
+    backgroundColor: '#4fc3f7',
+    color: '#fff',
+    borderRadius: '4px',
+    border: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '4px 8px',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    transition: 'background-color 0.3s ease, color 0.3s ease',
+    cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: '#039be5',
     },
-    '.MuiPickersDay-dayWithMargin': {
-      color: 'black', // Highlight color for the days
+  },
+  '& .rbc-event-label': {
+    fontSize: '0.85em',
+    color: '#333',
+  },
+  '& .rbc-row-segment': {
+    padding: '2px 4px',
+  },
+  '& .rbc-selected': {
+    backgroundColor: '#0288d1',
+    color: '#fff',
+  },
+  '& .rbc-show-more': {
+    color: '#039be5',
+    background: 'transparent',
+  },
+  '& .rbc-day-slot .rbc-time-slot': {
+    borderBottom: 'none',
+  },
+  '& .rbc-time-header': {
+    borderBottom: '1px solid #4fc3f7',
+    padding: '10px 0',
+  },
+  '& .rbc-time-content': {
+    '& .rbc-time-gutter, & .rbc-allday-cell': {
+      borderRight: '1px solid #4fc3f7',
+      background: '#f7f7f7',
     },
-    '.MuiPickersDay-today': {
-      border: '1px solid #1976d2', // Border for today
-    },
-    width: '100%',
-  };
+  },
+});
 
+
+const MyCalendar = () => {
+  const [events, setEvents] = useState([]);
+  const api = useAxiosPrivate();
+
+  useEffect(() => {
+    api.get("http://localhost:4000/api/user/get-my-registered-events")
+      .then(({ data }) => {
+        const formattedEvents = data.events.map((event) => {
+          const [year, month, day] = event.date.split("T")[0].split("-").map(num => parseInt(num, 10));
+          const localDate = new Date(year, month - 1, day);
+          return {
+            title: event.title || 'Event',
+            start: localDate,
+            end: localDate,
+            allDay: true,
+          };
+        });
+
+        setEvents(formattedEvents);
+      })
+      .catch((error) => {
+        console.error("Error fetching events: ", error);
+      });
+  }, [api]);
+  console.log(events)
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Grid container spacing={2} sx={{ width: 'auto', margin: 'auto',mt:4 }}>
-        <Grid item xs={12} md={8} lg={6}>
-          <Paper elevation={3} sx={paperStyle}>
-            <StaticDatePicker
-              displayStaticWrapperAs="desktop"
-              openTo="day"
-              value={value}
-              onChange={(newValue) => {
-                setValue(newValue);
-              }}
-              renderInput={(params) => <TextField {...params} />}
-              sx={datePickerStyle}
-            />
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={4} lg={6}>
-          <Paper elevation={3} sx={listStyle}>
-            <List>
-              {events.map((event, index) => (
-                <ListItem key={index}>
-                  <ListItemText primary={event.title} secondary={event.date} />
-                </ListItem>
-              ))}
-            </List>
-          </Paper>
-        </Grid>
-      </Grid>
-    </LocalizationProvider>
+    <StyledCalendarBox>
+      <Calendar
+        localizer={localizer}
+        events={events}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: 500, width: 700, margin: '20px 0' }}
+      />
+    </StyledCalendarBox>
   );
-}
+};
+
+export default MyCalendar;

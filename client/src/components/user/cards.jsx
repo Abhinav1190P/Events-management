@@ -5,8 +5,8 @@ import { toast } from "react-hot-toast";
 
 const EventsSection = () => {
   const [events, setEvents] = useState([]);
-  const [openModal, setOpenModal] = useState(false); // State for modal open/close
-  const [selectedEvent, setSelectedEvent] = useState(null); // State to store the selected event
+  const [openModal, setOpenModal] = useState(false); 
+  const [selectedEvent, setSelectedEvent] = useState(null); 
   const api = useAxiosPrivate();
 
   useEffect(() => {

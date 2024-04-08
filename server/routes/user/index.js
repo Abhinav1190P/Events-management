@@ -10,5 +10,12 @@ router.use("/get-events", userController.getEvents)
 
 router.use("/create-registration", userController.createRegistration)
 
+router.use('/get-my-registrations', userController.GetMyEventRegistrations)
+
+router.use('/scan-my-qr', userController.ScanEventRegistration)
+
+router.use('/verify-attendance', userController.VerifyAttendance)
+
+router.use('/get-my-registered-events', userController.GetMyRegisteredEvents)
 
 module.exports = router;

@@ -11,6 +11,10 @@ const registrationSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    verified: {
+        type: Boolean,
+        default: false
+    },
     time: {
         type: String,
         required: true,

@@ -6,6 +6,8 @@ import AuthGuard from "../AuthGuard";
 const Profile = Loadable(lazy(() => import("@pages/user/Profile")));
 const Dashboard = Loadable(lazy(() => import("@pages/user/Dashboard")));
 const Landing = Loadable(lazy(() => import("@pages/user/landing")));
+const RegisterdEvents = Loadable(lazy(() => import("@pages/user/RegisteredEvents.jsx")))
+const FillAttendance = Loadable(lazy(() => import('@pages/user/FillAttendance.jsx')))
 const UserRoutes = {
   element: (
     <AuthGuard allowRole="user">
@@ -23,7 +25,15 @@ const UserRoutes = {
     },
     {
       path: "user/landing",
-      element:<Landing/>
+      element: <Landing />
+    },
+    {
+      path: "user/registered-events",
+      element: <RegisterdEvents />
+    },
+    {
+      path: "user/secret/:token",
+      element: <FillAttendance />
     }
   ],
 };

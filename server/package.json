@@ -17,9 +17,12 @@
     "express-mongo-sanitize": "^2.2.0",
     "express-rate-limit": "^6.7.0",
     "helmet": "^6.0.1",
+    "jimp": "^0.22.12",
     "jsonwebtoken": "^8.5.1",
+    "jsqr-es6": "^1.4.0-1",
     "mongoose": "^6.8.0",
     "qr-image": "^3.2.0",
+    "qrcode-reader": "^1.0.4",
     "uuid": "^9.0.0",
     "xss-clean": "^0.1.1",
     "zod": "^3.20.2"
@@ -29,6 +32,7 @@
     "eslint": "^8.29.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
+    "esm": "^3.2.25",
     "nodemon": "^2.0.20",
     "prettier": "^2.8.0"
   }

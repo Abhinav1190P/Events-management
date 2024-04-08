@@ -114,7 +114,7 @@ const GetClubs = async (req, res, next) => {
       .skip((page - 1) * perPage)
       .limit(perPage);
 
-    const totalClubs = await Club.find({ club_admin: req.user.userId }).countDocuments(); // Get total count of all clubs
+    const totalClubs = await Club.find({ club_admin: req.user.userId }).countDocuments();
 
 
     return res.json({ success: true, clubs, totalClubs });

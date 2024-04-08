@@ -17,7 +17,7 @@ const Header = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  
+
   return (
     <AppBar position="static" sx={{ mb: 4, color: 'black', backgroundColor: '#e0e0e0' }}>
       <Container maxWidth="xl">
@@ -26,27 +26,27 @@ const Header = () => {
             <img src={logo} alt="logo" style={{ maxWidth: "100px", maxHeight: "50px" }} />
           </Typography>
           <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', flexGrow: 1, justifyContent: 'flex-end' }}>
-            <Button color="inherit" component={Link} to="/">Registered Events</Button>
+            <Button color="inherit" component={Link} to="/user/registered-events">Registered Events</Button>
             <Button color="inherit" component={Link} to="/about">Posts</Button>
             <Button color="inherit" component={Link} to="/features">Whats new</Button>
             <Button color="inherit" component={Link} to="/testimonials">Join Club/Society</Button>
             <Button color="inherit" component={Link} to="/contact">Review</Button>
             <Button
-               color="inherit"
-               sx={{
-                 minWidth: "auto",
-                 p: 0,
-                 fontWeight: "normal",
-                 ml: 2, 
-              '&:hover': {
+              color="inherit"
+              sx={{
+                minWidth: "auto",
+                p: 0,
+                fontWeight: "normal",
+                ml: 2,
+                '&:hover': {
 
-                 backgroundColor: 'rgba(255, 255, 255, 0.08)', 
-              },
-             }}
-             onClick={logout}
-             >
-             Logout
-           </Button>
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                },
+              }}
+              onClick={logout}
+            >
+              Logout
+            </Button>
           </Box>
           <IconButton
             size="large"
