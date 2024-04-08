@@ -70,7 +70,7 @@ const Registrations = () => {
       ) : (
         <Grid container spacing={2}>
           {registrations.map((registration) => (
-            <Grid item xs={12} key={registration._id}>
+            <Grid minWidth={'400px'} item xs={12} key={registration._id}>
               <Paper style={{ padding: '20px', position: 'relative' }}>
                 <div>
                   <Typography variant="h6">{registration.name}</Typography>
@@ -82,7 +82,7 @@ const Registrations = () => {
                   <Button
                     variant="contained"
                     color="primary"
-                    style={{ position: 'absolute', top: '20px', right: '20px' }}
+                    style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 1 }} 
                     onClick={() => { handleOpenQR(registration.qrCode); setQrId(registration._id) }}
                   >
                     Open QR
