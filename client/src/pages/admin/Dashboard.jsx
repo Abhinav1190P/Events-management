@@ -95,15 +95,19 @@ const Admin = () => {
     </div>
   );
 
-  const Events = () => {
-    if (!selectedEvent) {
-      return null; // Render nothing if selectedEvent is undefined
-    }
-  
-    const { registrations } = selectedEvent;
-  
-    return (
-      <Box p={2}>
+
+
+const Events = () => {
+  if (!selectedEvent) {
+    return null; // Render nothing if selectedEvent is undefined
+  }
+
+  const { registrations } = selectedEvent;
+
+  return (
+    <Box p={2} display="flex" flexDirection="row" justifyContent="center" alignItems="flex-start">
+      {/* Display Event Information */}
+      <Box flex="1" maxWidth="50%" pr={2}>
         <Typography variant="h4" gutterBottom>
           {selectedEvent.name}
         </Typography>
@@ -127,18 +131,22 @@ const Admin = () => {
         <Typography variant="subtitle1">
           Description: {selectedEvent.description}
         </Typography>
-  
-        {/* Display registrations */}
+      </Box>
+
+      {/* Display Registrations (Users) */}
+      <Box flex="1" maxWidth="50%">
+        <Typography variant="h5" gutterBottom>
+          Registrations
+        </Typography>
         <List>
           {registrations && registrations.map((registration, index) => (
             <ListItem key={index}>
-              <ListItemText primary={`Registration ${index + 1}`} />
               {registration.tokens && registration.tokens.length > 0 && (
                 <List>
                   {registration.tokens.map((token, tokenIndex) => (
                     <ListItem key={tokenIndex}>
-                      <ListItemText primary={`Token ${tokenIndex + 1}`} />
                       <ListItemText primary={`User Name: ${token.userName}`} />
+                      <div style={{width:'20px'}}></div>
                       <ListItemText primary={`Password: ${token.password}`} />
                     </ListItem>
                   ))}
@@ -147,17 +155,11 @@ const Admin = () => {
             </ListItem>
           ))}
         </List>
-  
-        <Drawer anchor="right" open={false} onClose={() => { }}>
-          <List>
-            <ListItem button>
-              <ListItemText primary="Example Action" />
-            </ListItem>
-          </List>
-        </Drawer>
       </Box>
-    );
-  };
+    </Box>
+  );
+};
+
 
   const createEvent = () => (
     <div>

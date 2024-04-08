@@ -63,14 +63,18 @@ const getEvents = async (req, res, next) => {
 
     const tokens = await QrToken.find({ registrationId: { $in: registrationIds } }).select("userName password registrationId");
 
-    let registrationsWithTokens = registrations.map(registration => {
-      const token = tokens.find(token => token && token.registrationId && token.registrationId.equals(registration._id));
-      if (token) {
-        return { ...registration.toObject(), token };
-      } else {
-        console.log('No token found for registration:', registration._id);
-        return { ...registration.toObject(), token: null };
+    // Group tokens by registration ID
+    const tokensByRegistrationId = tokens.reduce((acc, token) => {
+      if (!acc[token.registrationId]) {
+        acc[token.registrationId] = [];
       }
+      acc[token.registrationId].push(token);
+      return acc;
+    }, {});
+
+    let registrationsWithTokens = registrations.map(registration => {
+      const registrationTokens = tokensByRegistrationId[registration._id] || [];
+      return { ...registration.toObject(), tokens: registrationTokens };
     });
 
     const eventsWithRegistrations = events.map(event => {
@@ -85,6 +89,7 @@ const getEvents = async (req, res, next) => {
     next(error);
   }
 };
+
 
 
 
