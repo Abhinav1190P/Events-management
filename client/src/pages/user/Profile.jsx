@@ -4,6 +4,7 @@ import MyCalender from '../../components/user/calendar';
 import EventCard from '../../components/user/cards';
 import ClubsSection from '../../components/user/clubs';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+import Registrations from './RegisteredEvents';
 const ProfilePage = () => {
   const api = useAxiosPrivate()
   const [info, setInfo] = useState({})
@@ -26,7 +27,10 @@ const ProfilePage = () => {
       <h3>CS hours: {
         info ? info.csHours : 0
       }</h3>
-      <MyCalender />
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center', flex: '1', marginRight: '20px' }}>
+        <MyCalender />
+        <Registrations />
+      </div>
       <EventCard />
       <ClubsSection />
     </div>

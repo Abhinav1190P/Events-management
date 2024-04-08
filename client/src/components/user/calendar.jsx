@@ -110,7 +110,7 @@ const MyCalendar = () => {
         events={events}
         startAccessor="start"
         endAccessor="end"
-        style={{ height: 500, width: 700, margin: '20px 0' }}
+        style={{ height: 500, width: 900, margin: '20px 0', marginRight: '50px' }}
       />
     </StyledCalendarBox>
   );
