@@ -3,7 +3,8 @@ const Event = require("../models/Events");
 const Register = require("../models/Registration");
 const Club = require("../models/Club")
 const About = require("../models/About")
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const QrToken = require("../models/QrToken");
 
 const profile = async (req, res, next) => {
   try {
@@ -53,13 +54,42 @@ const getEvents = async (req, res, next) => {
     const events = await Event.find({ admin_url: req.user.userId }).select(
       "name club time venue date description banner createdAt"
     );
+
+    const eventIds = events.map(event => event._id);
+
+    const registrations = await Register.find({ event_id: { $in: eventIds } });
+
+    const registrationIds = registrations.map(registration => registration._id);
+
+    const tokens = await QrToken.find({ registrationId: { $in: registrationIds } }).select("userName password registrationId");
+
+    let registrationsWithTokens = registrations.map(registration => {
+      const token = tokens.find(token => token && token.registrationId && token.registrationId.equals(registration._id));
+      if (token) {
+        return { ...registration.toObject(), token };
+      } else {
+        console.log('No token found for registration:', registration._id);
+        return { ...registration.toObject(), token: null };
+      }
+    });
+
+    const eventsWithRegistrations = events.map(event => {
+      const eventRegistrations = registrationsWithTokens.filter(registration => registration && registration.event_id && registration.event_id.toString() === event._id.toString());
+      return { ...event.toObject(), registrations: eventRegistrations };
+    });
+
     return res
       .status(200)
-      .json({ success: false, message: "Got events", events });
+      .json({ success: true, message: "Got events with registrations and tokens", events: eventsWithRegistrations });
   } catch (error) {
     next(error);
   }
 };
+
+
+
+
+
 
 const getAdminStats = async (req, res, next) => {
   try {

@@ -82,7 +82,7 @@ const Registrations = () => {
                   <Button
                     variant="contained"
                     color="primary"
-                    style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 1 }} 
+                    style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 1 }}
                     onClick={() => { handleOpenQR(registration.qrCode); setQrId(registration._id) }}
                   >
                     Open QR

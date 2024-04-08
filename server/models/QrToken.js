@@ -15,6 +15,14 @@ const tokenSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    userName: {
+        type: String,
+        required: true
+    },
+    registrationId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Register'
+    },
     expirationTime: {
         type: Date,
         required: true

@@ -109,7 +109,6 @@ const GetMyEventRegistrations = async (req, res, next) => {
 const ScanEventRegistration = async (req, res, next) => {
   try {
     const { qrImage } = req.body;
-
     const qrImagePath = path.join(__dirname, 'qr_codes', `${qrImage}.png`);
 
     if (!fs.existsSync(qrImagePath)) {
@@ -140,8 +139,9 @@ const ScanEventRegistration = async (req, res, next) => {
               const expirationTime = Date.now() + 5 * 60 * 1000;
               const token = generateQrPageToken(value.result, expirationTime);
               const password = generateRandomPassword();
+              const registrationId = JSON.parse(value.result).registrationId;
 
-              QrToken.create({ data: value.result, token, expirationTime, password })
+              QrToken.create({ data: value.result, token, expirationTime, password, userName: req.user.userName, registrationId: registrationId })
                 .then(() => {
                   const secretPageUrl = `/secret/${token}`;
                   res.json({ secretPageUrl });

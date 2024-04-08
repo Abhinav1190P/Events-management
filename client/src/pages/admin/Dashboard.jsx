@@ -32,7 +32,7 @@ const Admin = () => {
   const [activeItem, setActiveItem] = useState("Dashboard");
   const [openDropdown, setOpenDropdown] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState({})
-
+  const [tokens, setTokens] = useState([])
   const api = useAxiosPrivate()
   const handleDropMenu = () => {
     setOpenDropdown(!openDropdown);
@@ -48,7 +48,8 @@ const Admin = () => {
       const fetchEvents = async () => {
         try {
           const response = await api.get("http://localhost:4000/api/admin/get-event");
-          setEvents(response.data?.events); // Assuming the API response contains an array of events
+          setEvents(response.data?.events);
+          setUsers(response.data?.tokens)
         } catch (error) {
           console.error('Failed to fetch events:', error);
         }
@@ -56,7 +57,7 @@ const Admin = () => {
       fetchEvents()
     }
   }, [activeItem])
-
+  console.log(events)
   const handleClick = (text, dropdownItem) => {
     if (text === "Events") {
       handleDropMenu();
@@ -98,7 +99,9 @@ const Admin = () => {
     if (!selectedEvent) {
       return null; // Render nothing if selectedEvent is undefined
     }
-
+  
+    const { registrations } = selectedEvent;
+  
     return (
       <Box p={2}>
         <Typography variant="h4" gutterBottom>
@@ -124,6 +127,27 @@ const Admin = () => {
         <Typography variant="subtitle1">
           Description: {selectedEvent.description}
         </Typography>
+  
+        {/* Display registrations */}
+        <List>
+          {registrations && registrations.map((registration, index) => (
+            <ListItem key={index}>
+              <ListItemText primary={`Registration ${index + 1}`} />
+              {registration.tokens && registration.tokens.length > 0 && (
+                <List>
+                  {registration.tokens.map((token, tokenIndex) => (
+                    <ListItem key={tokenIndex}>
+                      <ListItemText primary={`Token ${tokenIndex + 1}`} />
+                      <ListItemText primary={`User Name: ${token.userName}`} />
+                      <ListItemText primary={`Password: ${token.password}`} />
+                    </ListItem>
+                  ))}
+                </List>
+              )}
+            </ListItem>
+          ))}
+        </List>
+  
         <Drawer anchor="right" open={false} onClose={() => { }}>
           <List>
             <ListItem button>
@@ -134,8 +158,6 @@ const Admin = () => {
       </Box>
     );
   };
-
-
 
   const createEvent = () => (
     <div>
